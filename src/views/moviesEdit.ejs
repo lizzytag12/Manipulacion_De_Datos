@@ -14,7 +14,7 @@
       </figure>
     <h1 class="titulo">Película a Editar:  <%= Movie.title %></h1>
     <section class="formulario">
-        <form action="/movies/update/<%= Movie.id %>_method=PUT" method="POST">
+        <form action="/movies/update/<%= Movie.id %>?_method=PUT" method="POST">
             <label for="title">Title </label>
             <p><input type="text" name="title" id="title" value="<%= Movie.title %>" required></p>
             <label for="rating">Rating </label>
@@ -22,7 +22,7 @@
             <label for="awards">Awards </label>
             <p><input type="number" name="awards" id="awards" value="<%= Movie.awards %>" required></p>
             <label for="release_date">Release date </label>
-            <p><input type="date" name="release_date" id="release_date" value="<%= Movie.release_date %>" required></p>
+            <p><input type="date" name="release_date" id="release_date" value="<%= release_date %>" required></p>
             <label for="length">Length </label>
             <p><input type="number" name="length" id="" value="<%= Movie.length %>" required></p>
             <label for="genre">Genre </label>

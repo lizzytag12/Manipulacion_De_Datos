@@ -62,7 +62,7 @@ const moviesController = {
     create: function (req, res) {
         //return res.send(req.body) // verifico lo q me trae el form
         
-        const{title,awards,release_date,genre_id,rating,length}=req.body //desestructuracion de lo que viene por el formulario
+        const {title,awards,release_date,genre_id,rating,length}=req.body //desestructuracion de lo que viene por el formulario
         db.Movie.create({  // guardo lo que me viene por formulario
             title:title.trim(),
             awards:+awards,
@@ -94,25 +94,33 @@ const moviesController = {
 
         return res.render('moviesEdit',{
             Movie : movie,
-            release_date: moment(movie.release_date).format('YYYY-MM-DD'), // mando  formato en que el input espera recibir la informacion
+            release_date : moment(movie.release_date).format('YYYY-MM-DD'), // mando  formato en que el input espera recibir la informacion
             genres,
         })
        })
        .catch(errores=> console.log(errores));
     },
     update: function (req,res) {
-
+       //return res.send(req.body)
+       const {title,awards,release_date,genre_id,rating,length}=req.body
         db.Movie.update(
         {
-
+            title:title.trim(),
+            awards:+awards,
+            release_date,
+            rating:+rating,
+            length:+length,
+            genre_id:+genre_id
         },
         {
 
-        },
-        {
+            where :{
+                id : req.params.id
+            }
 
-        }
-        )
+        })
+        .then(()=> res.redirect('/movies'))
+        .catch(errores=> console.log(errores))
         
     },
     delete: function (req, res) {
