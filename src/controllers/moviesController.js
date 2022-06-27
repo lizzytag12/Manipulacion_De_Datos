@@ -1,6 +1,7 @@
 const db = require('../database/models');
 const sequelize = db.sequelize;
 const moment = require('moment'); //instalo moment con npm y luego lo requiero en el controlador
+const { disable } = require('colors');
 
 //Otra forma de llamar a los modelos
 const Movies = db.Movie;
@@ -10,13 +11,13 @@ const moviesController = {
         db.Movie.findAll()
             .then(movies => {
                 res.render('moviesList', {movies})
-            })
+            }).catch(error=> console.log(error));
     },
     'detail': (req, res) => {
         db.Movie.findByPk(req.params.id)
             .then(movie => {
                 res.render('moviesDetail', {movie});
-            });
+            }).catch(error=> console.log(error));
     },
     'new': (req, res) => {
         db.Movie.findAll({
@@ -27,7 +28,7 @@ const moviesController = {
         })
             .then(movies => {
                 res.render('newestMovies', {movies});
-            });
+            }).catch(error=> console.log(error));
     },
     'recomended': (req, res) => {
         db.Movie.findAll({
@@ -40,7 +41,7 @@ const moviesController = {
         })
             .then(movies => {
                 res.render('recommendedMovies', {movies});
-            });
+            }).catch(error=> console.log(error));
     }, //Aqui debemos modificar y completar lo necesario para trabajar con el CRUD
     add: function (req, res) {
       
@@ -78,8 +79,8 @@ const moviesController = {
             //return res.redirect('/movies')// o redireccion a todas las peliculas
         })
 
-        .catch(errores=>{ // capturo errores en caso de haberlos
-            console.log(errores);
+        .catch(error=>{ // capturo errores en caso de haberlos
+            console.log(error);
         })
     },
     edit: function(req, res) {
@@ -98,10 +99,11 @@ const moviesController = {
             genres,
         })
        })
-       .catch(errores=> console.log(errores));
+       .catch(error=> console.log(error));
     },
     update: function (req,res) {
        //return res.send(req.body)
+      /* Destructuring the req.body and then updating the movie with the new values. */
        const {title,awards,release_date,genre_id,rating,length}=req.body
         db.Movie.update(
         {
@@ -114,20 +116,38 @@ const moviesController = {
         },
         {
 
+            /* A condition to delete the movie with the id that comes from the url. */
             where :{
                 id : req.params.id
             }
 
         })
-        .then(()=> res.redirect('/movies'))
-        .catch(errores=> console.log(errores))
+        /* Redirecting to the detail page of the movie that was just updated. */
+        .then(()=> res.redirect('/movies/detail/'+ req.params.id))
+        /* Catching errors. */
+        .catch(error=> console.log(error))
         
     },
     delete: function (req, res) {
-        // TODO
+        db.Movie.findByPk(req.params.id) // capturo el id que me viene por url
+        .then(movie=>res.render('moviesDelete',{ // redirigo a la vista de la pelicula que quiero borrar
+            movie // paso la informacion de la pelicula en cuestion
+        }))
+        .catch(error=> console.log(error)); // capturo errores
+        
+        
+
     },
     destroy: function (req, res) {
-        // TODO
+      // return res.send(req.params.id)
+
+      db.Movie.destroy({ //uso el metodo destroy
+        where:{ //IMPORTANTE EL WHERE
+            id: req.params.id // pasar el id de la pelicula que quiero borrar
+        }
+      })
+      .then(()=>res.redirect('/movies')) //redireccion a la vista de las peliculas
+      .catch(error=>console.log(error));//capturo los errores
     }
 
 }
